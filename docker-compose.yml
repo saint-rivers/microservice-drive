@@ -1,0 +1,25 @@
+version: '3.1'
+
+volumes:
+  drive-data:
+
+services:
+
+  drive-db:
+    image: postgres:latest
+    restart: always
+    container_name: drive-database
+    ports:
+      - "4432:5432"
+    environment:
+      - POSTGRES_DB=drive_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - PGDATA=/var/lib/postgresql/data
+    volumes:
+      - drive-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
