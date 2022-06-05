@@ -26,24 +26,14 @@ public class Folder {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "parent_id")
-    private UUID parentId;
-
     @Column(name = "name")
     private String name;
 
     @OneToMany
-    List<Folder> folders;
+    private List<Folder> subFolders;
 
-    @OneToMany(
-            targetEntity = Content.class,
-            cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER, orphanRemoval = true)
-//    @JoinColumn(
-//            name = "content",
-//            table = "content",
-//            foreignKey = @ForeignKey(name = "folder_id", foreignKeyDefinition = "folder_id"))
-    List<Content> contentList;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    private List<Content> contentList;
 }
 
 
