@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -24,14 +25,17 @@ public class FolderServiceImpl implements FolderService {
 
     @Override
     public Mono<Folder> findAllByFolderId(String folderId) {
-        return folderRepository.findById(UUID.fromString(folderId));
+        Optional<Folder> folder = folderRepository.findById(UUID.fromString(folderId));
+        return Mono.justOrEmpty(folder);
     }
 
     @Override
     public Mono<Folder> addFolder(FolderRequest body) {
         Folder folder = modelMapper.map(body, Folder.class);
         folder.setId(null);
-        return folderRepository.save(folder);
+
+        Folder savedFolder = folderRepository.save(folder);
+        return Mono.just(savedFolder);
     }
 
 }

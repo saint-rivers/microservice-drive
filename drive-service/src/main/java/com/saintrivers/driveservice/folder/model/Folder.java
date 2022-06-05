@@ -1,33 +1,49 @@
 package com.saintrivers.driveservice.folder.model;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
+import org.hibernate.annotations.GenericGenerator;
 
+import javax.persistence.*;
 import java.util.List;
 import java.util.UUID;
 
-
-@Table("app_folders")
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
 @SuperBuilder
+@Table(name = "app_folders")
+@Entity
+@NoArgsConstructor
 public class Folder {
 
     @Id
-    @Column("id")
-    UUID id;
+    @GenericGenerator(
+            name = "UUID",
+            strategy = "org.hibernate.id.UUIDGenerator")
+    @GeneratedValue(generator = "UUID")
+    @Column(name = "id", updatable = false, nullable = false)
+    private UUID id;
 
-    @Column("parent_id")
-    UUID parentId;
+    @Column(name = "parent_id")
+    private UUID parentId;
 
-    @Column("name")
-    String name;
+    @Column(name = "name")
+    private String name;
 
+    @OneToMany
     List<Folder> folders;
 
+    @OneToMany(
+            targetEntity = Content.class,
+            cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER, orphanRemoval = true)
+//    @JoinColumn(
+//            name = "content",
+//            table = "content",
+//            foreignKey = @ForeignKey(name = "folder_id", foreignKeyDefinition = "folder_id"))
     List<Content> contentList;
 }
+
+
