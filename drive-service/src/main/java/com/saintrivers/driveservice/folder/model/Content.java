@@ -13,5 +13,6 @@ public class Content {
 
     private UUID filename;
     private String displayName;
+    private String resourceName;
     private ContentType contentType;
 }
