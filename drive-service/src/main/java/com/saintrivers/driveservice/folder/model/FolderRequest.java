@@ -13,6 +13,6 @@ import java.util.UUID;
 @SuperBuilder
 public class FolderRequest {
     @Schema(nullable = true)
-    private UUID folderId;
+    private UUID parentId;
     private String name;
 }

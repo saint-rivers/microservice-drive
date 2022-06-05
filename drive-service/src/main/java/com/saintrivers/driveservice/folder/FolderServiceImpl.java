@@ -30,6 +30,7 @@ public class FolderServiceImpl implements FolderService {
     @Override
     public Mono<Folder> addFolder(FolderRequest body) {
         Folder folder = modelMapper.map(body, Folder.class);
+        folder.setId(null);
         return folderRepository.save(folder);
     }
 

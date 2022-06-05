@@ -2,6 +2,7 @@ version: '3.1'
 
 volumes:
   drive-data:
+  keycloak-data:
 
 services:
 
@@ -23,3 +24,40 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  keycloak-db:
+    # container_name: keycloak-db
+    image: postgres:11
+    volumes:
+      - keycloak-data:/var/lib/postgresql/data
+    container_name: keycloak-database
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5433:5432"
+
+  keycloak-service:
+    image: jboss/keycloak:16.1.1
+    container_name: keycloak-service
+#    volumes:
+#      - ./auth-service/realm.json:/opt/realm.json
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: keycloak-db
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_SCHEMA: public
+      DB_PASSWORD: password
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: mrrobot
+      KEYCLOAK_LOGLEVEL: DEBUG
+      ROOT_LOGLEVEL: DEBUG
+#      KEYCLOAK_IMPORT: /opt/realm.json
+    ports:
+      - "8800:8080"
+      - "8443:8443"
+    depends_on:
+      - keycloak-db
+
