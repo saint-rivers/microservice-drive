@@ -3,7 +3,7 @@ package com.saintrivers.driveservice.folder.webflux;
 import com.saintrivers.driveservice.folder.FolderService;
 import com.saintrivers.driveservice.folder.model.Folder;
 import com.saintrivers.driveservice.folder.model.FolderRequest;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyExtractors;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -14,10 +14,14 @@ import reactor.util.annotation.NonNull;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Component
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 class FolderHandler {
 
     private final FolderService folderService;
+
+    FolderHandler(@Qualifier("folderServiceR2dbcImpl") FolderService folderService) {
+        this.folderService = folderService;
+    }
 
     @NonNull
     public Mono<ServerResponse> getFolderTreeByFolderId(ServerRequest request) {

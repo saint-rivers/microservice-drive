@@ -1,40 +1,71 @@
 package com.saintrivers.driveservice.folder.model;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.GenericGenerator;
+//import lombok.Getter;
+//import lombok.NoArgsConstructor;
+//import lombok.Setter;
+//import lombok.experimental.SuperBuilder;
+//import org.hibernate.annotations.GenericGenerator;
+//
+//import javax.persistence.*;
+//import java.util.List;
+//import java.util.UUID;
+//
+//@Getter
+//@Setter
+//@SuperBuilder
+//@Table(name = "app_folders")
+//@Entity
+//@NoArgsConstructor
+//public class Folder {
+//
+//    @Id
+//    @GenericGenerator(
+//            name = "UUID",
+//            strategy = "org.hibernate.id.UUIDGenerator")
+//    @GeneratedValue(generator = "UUID")
+//    @Column(name = "id", updatable = false, nullable = false)
+//    private UUID id;
+//
+//    @Column(name = "name")
+//    private String name;
+//
+//    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+//    private List<Folder> subFolders;
+//
+//    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+//    private List<Content> contentList;
+//
+//}
 
-import javax.persistence.*;
-import java.util.List;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.domain.Persistable;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
+
+import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Getter
-@Setter
-@SuperBuilder
-@Table(name = "app_folders")
-@Entity
+@Data
 @NoArgsConstructor
-public class Folder {
-
+@Table("app_folders")
+public class Folder implements Persistable<UUID> {
     @Id
-    @GenericGenerator(
-            name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator")
-    @GeneratedValue(generator = "UUID")
-    @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "name")
+    @Column("name")
     private String name;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<Folder> subFolders;
+    @Column("parent_id")
+    private UUID parentId;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-    private List<Content> contentList;
+    private LocalDateTime createdAt;
 
+    @Override
+    public boolean isNew() {
+        return createdAt == null;
+    }
 }
-
 
