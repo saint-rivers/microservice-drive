@@ -29,11 +29,12 @@ public class Folder {
     @Column(name = "name")
     private String name;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Folder> subFolders;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<Content> contentList;
+
 }
 
 

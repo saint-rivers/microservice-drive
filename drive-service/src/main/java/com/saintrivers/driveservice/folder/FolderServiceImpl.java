@@ -34,8 +34,17 @@ public class FolderServiceImpl implements FolderService {
         Folder folder = modelMapper.map(body, Folder.class);
         folder.setId(null);
 
-        Folder savedFolder = folderRepository.save(folder);
-        return Mono.just(savedFolder);
+        if (body.getParentId() == null){
+            Folder result = folderRepository.save(folder);
+            return Mono.just(result);
+        }
+
+        Optional<Folder> parentFolder = folderRepository.findById(body.getParentId());
+        parentFolder.ifPresent(parent -> {
+            parent.getSubFolders().add(folder);
+            folderRepository.save(parent);
+        });
+        return Mono.just(folder);
     }
 
 }
