@@ -6,6 +6,16 @@ volumes:
 
 services:
 
+  reverse-proxy:
+    container_name: drv-reverse-proxy
+    build:
+      context: ./nginx
+      dockerfile: nginx.Dockerfile
+    ports:
+      - "443:443"
+      - "81:80"
+    restart: always
+
   eureka-server:
     container_name: drv-eureka-server
     build: ./eureka-server
@@ -29,8 +39,8 @@ services:
       spring.datasource.url: jdbc:postgresql://drive-database:5432/drive_db
       eureka.client.serviceUrl.defaultZone: http://eureka-server:8761/eureka/
       spring.security.oauth2.resourceserver.jwt.issuer-uri: https://saintrivers.tech:8443/auth/realms/myrealm
-      spring.security.oauth2.resourceserver.jwt.jwt-set-uri: https://saintrivers.tech:8443/auth/realms/myrealm/openid-connect/certs
-
+      spring.security.oauth2.resourceserver.jwt.jwk-set-uri: https://saintrivers.tech:8443/auth/realms/myrealm/protocol/openid-connect/certs
+  
   drive-database:
     image: postgres:latest
     #    restart: always
@@ -140,6 +150,7 @@ services:
       KONG_PLUGINS: oidc,key-auth
     links:
       - keycloak-service
+      - drive-api
     depends_on:
       - kong-migration
       - kong-database

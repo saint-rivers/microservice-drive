@@ -27,4 +27,19 @@ public class DriveServiceApplication {
         return ResponseEntity.ok(map);
     }
 
+    @GetMapping("/public")
+    public ResponseEntity<?> unsecuredEndpoint() {
+        Map<String, String> map = new HashMap<>();
+        map.put("status", "OK");
+        map.put("payload", "public");
+        return ResponseEntity.ok(map);
+    }
+
+    @GetMapping("/")
+    public ResponseEntity<?> home() {
+        Map<String, String> map = new HashMap<>();
+        map.put("status", "OK");
+        map.put("payload", "home");
+        return ResponseEntity.ok(map);
+    }
 }
