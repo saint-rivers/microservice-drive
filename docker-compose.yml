@@ -28,8 +28,8 @@ services:
       server.port: 8081
       spring.datasource.url: jdbc:postgresql://drive-database:5432/drive_db
       eureka.client.serviceUrl.defaultZone: http://eureka-server:8761/eureka/
-      spring.security.oauth2.resourceserver.jwt.issuer-uri: http://keycloak-service:8080/auth/realms/myrealm
-      spring.security.oauth2.resourceserver.jwt.jwt-set-uri: http://keycloak-service:8080/auth/realms/myrealm/openid-connect/certs
+      spring.security.oauth2.resourceserver.jwt.issuer-uri: https://keycloak-service:8443/auth/realms/myrealm
+      spring.security.oauth2.resourceserver.jwt.jwt-set-uri: https://keycloak-service:8443/auth/realms/myrealm/openid-connect/certs
 
   drive-database:
     image: postgres:latest
@@ -85,7 +85,6 @@ services:
       - "8443:8443"
     depends_on:
       - keycloak-db
-
 
   kong-database:
     image: postgres:11
