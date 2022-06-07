@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: drive-service
+  datasource:
+    url: jdbc:postgresql://localhost:4432/drive_db
+    username: postgres
+    password: password
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2KB
+      max-file-size: 200MB
+      max-request-size: 215MB
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8800/auth/realms/myrealm
+          jwt-set-uri: http://localhost:8800/auth/realms/myrealm/openid-connect/certs
+
+server:
+  port: 8081
+
+springdoc:
+  swagger-ui:
+    operations-sorter: method
+    tags-sorter: alpha
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+

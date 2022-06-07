@@ -6,9 +6,32 @@ volumes:
 
 services:
 
+  eureka-server:
+    build: ./eureka-server
+    ports:
+      - "8761:8761"
+
+  drive-api:
+    build: ./drive-service
+    ports:
+      - "8081:8081"
+    links:
+      - eureka-server
+      - keycloak-service
+    depends_on:
+      - drive-database
+      - eureka-server
+      - keycloak-service
+    environment:
+      server.port: 8081
+      spring.datasource.url: jdbc:postgresql://drive-database:5432/drive_db
+      eureka.client.serviceUrl.defaultZone: http://eureka-server:8761/eureka/
+      spring.security.oauth2.resourceserver.jwt.issuer-uri: http://keycloak-service:8080/auth/realms/myrealm
+      spring.security.oauth2.resourceserver.jwt.jwt-set-uri: http://keycloak-service:8080/auth/realms/myrealm/openid-connect/certs
+
   drive-database:
     image: postgres:latest
-    restart: always
+    #    restart: always
     container_name: drive-database
     ports:
       - "4432:5432"
@@ -41,8 +64,8 @@ services:
   keycloak-service:
     image: jboss/keycloak:16.1.1
     container_name: keycloak-service
-#    volumes:
-#      - ./auth-service/realm.json:/opt/realm.json
+    volumes:
+      - ./keycloak/realm.json:/opt/realm.json
     environment:
       DB_VENDOR: POSTGRES
       DB_ADDR: keycloak-db
@@ -54,10 +77,105 @@ services:
       KEYCLOAK_PASSWORD: mrrobot
       KEYCLOAK_LOGLEVEL: DEBUG
       ROOT_LOGLEVEL: DEBUG
-#      KEYCLOAK_IMPORT: /opt/realm.json
+      KEYCLOAK_IMPORT: /opt/realm.json
     ports:
       - "8800:8080"
       - "8443:8443"
     depends_on:
       - keycloak-db
+
+
+  kong-database:
+    image: postgres:11
+    restart: always
+    container_name: kong-database
+    environment:
+      POSTGRES_USER: kong
+      POSTGRES_DB: kong
+      POSTGRES_PASSWORD: kong
+    ports:
+      - "5434:5432"
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "kong" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  #######################################
+  # Kong database migration
+  #######################################
+  kong-migration:
+    image: kong:2.8.1-alpine
+    command: "kong migrations bootstrap"
+    restart: on-failure
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: kong-database
+      KONG_PG_DATABASE: kong
+      KONG_PG_PASSWORD: kong
+    links:
+      - kong-database
+    depends_on:
+      - kong-database
+
+  #######################################
+  # Kong: The API Gateway
+  #######################################
+  kong:
+    container_name: kong-service
+    build:
+      context: ./kong
+      dockerfile: Dockerfile
+    image: kong-oidc:latest
+    restart: unless-stopped
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: kong-database
+      KONG_PG_PASSWORD: kong
+      KONG_PROXY_LISTEN: 0.0.0.0:8000
+      KONG_PROXY_LISTEN_SSL: 0.0.0.0:8443
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+      KONG_LOG_LEVEL: debug
+      KONG_PLUGINS: oidc,key-auth
+    links:
+      - keycloak-service
+    depends_on:
+      - kong-migration
+      - kong-database
+      - keycloak-service
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://kong:8001" ]
+      interval: 5s
+      timeout: 2s
+      retries: 15
+    ports:
+      - "8001:8001"
+      - "8000:8000"
+      - "2443:8443"
+
+  konga-prepare:
+    image: pantsel/konga:latest
+    command: "-c prepare -a postgres -u postgresql://kong:kong@kong-database:5432/konga"
+    restart: on-failure
+    links:
+      - kong-database
+    depends_on:
+      - kong
+      - kong-database
+
+  konga:
+    image: pantsel/konga:latest
+    restart: always
+    container_name: konga-ui
+    environment:
+      DB_ADAPTER: postgres
+      DB_HOST: kong-database
+      DB_DATABASE: konga
+      DB_USER: kong
+      DB_PASSWORD: kong # You must add a password , Otherwise it will fail
+    depends_on:
+      - kong
+      - kong-database
+    ports:
+      - "1337:1337"
 
