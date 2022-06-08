@@ -6,15 +6,15 @@ volumes:
 
 services:
 
-  reverse-proxy:
-    container_name: drv-reverse-proxy
-    build:
-      context: ./nginx
-      dockerfile: nginx.Dockerfile
-    ports:
-      - "443:443"
-      - "81:80"
-    restart: always
+#  reverse-proxy:
+#    container_name: drv-reverse-proxy
+#    build:
+#      context: ./nginx
+#      dockerfile: nginx.Dockerfile
+#    ports:
+#      - "443:443"
+#      - "81:80"
+#    restart: always
 
   eureka-server:
     container_name: drv-eureka-server
