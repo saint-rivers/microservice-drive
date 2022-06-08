@@ -147,7 +147,7 @@ services:
       KONG_PROXY_LISTEN_SSL: 0.0.0.0:8443
       KONG_ADMIN_LISTEN: 0.0.0.0:8001
       KONG_LOG_LEVEL: debug
-      KONG_PLUGINS: oidc,key-auth
+      KONG_PLUGINS: oidc,key-auth,oauth2
     links:
       - keycloak-service
       - drive-api
