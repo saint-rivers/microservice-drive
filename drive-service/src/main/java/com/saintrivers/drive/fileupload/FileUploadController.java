@@ -1,6 +1,5 @@
 package com.saintrivers.drive.fileupload;
 
-import com.saintrivers.drive.content.ContentUploadRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;

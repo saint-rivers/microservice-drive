@@ -3,9 +3,6 @@ package com.saintrivers.drive.folder.model.response;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.saintrivers.drive.content.Content;
 
 import lombok.AllArgsConstructor;

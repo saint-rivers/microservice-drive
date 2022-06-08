@@ -8,12 +8,10 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 
-import java.lang.reflect.Type;
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 
 //@MappedTypes({
 //        List.class, CustomSection.class
